@@ -18,6 +18,9 @@ jobs:
       with:
         node-version: '14'
 
+    - name: Navigate to the theme directory
+      run: cd wp-content/themes/twentytwentyone
+
     - name: Install Dependencies
       run: npm install
 
