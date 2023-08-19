@@ -34,7 +34,10 @@ jobs:
       run: npm install postcss
 
     - name: Build theme assets
-      run: npm run build --prefix ./wp-content/themes/twentytwentyone
+      run: |
+        ./node_modules/.bin/sass assets/sass/style.scss:style.css --style=expanded --source-map
+        ./node_modules/.bin/rtlcss style.css style-rtl.css
+        # Add similar commands for other build steps
 
   deploy:
     needs: build
