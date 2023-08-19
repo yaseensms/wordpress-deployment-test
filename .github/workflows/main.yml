@@ -30,6 +30,9 @@ jobs:
     - name: Install rtlcss (if not already installed)
       run: npm install -g rtlcss
 
+    - name: Install postcss (if not already installed)
+      run: npm install -g postcss
+
     - name: Build theme assets
       run: npm run build --prefix ./wp-content/themes/twentytwentyone
 
