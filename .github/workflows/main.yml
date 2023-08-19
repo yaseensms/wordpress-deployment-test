@@ -27,6 +27,9 @@ jobs:
     - name: Install Sass (if not already installed)
       run: npm install -g sass
 
+    - name: Install rtlcss (if not already installed)
+      run: npm install -g rtlcss
+
     - name: Build theme assets
       run: npm run build --prefix ./wp-content/themes/twentytwentyone
 
