@@ -25,7 +25,7 @@ jobs:
       run: npm install
 
     - name: Build theme assets
-      run: npm run build --prefix ./ # Specify the correct prefix
+      run: npm run build --prefix ./wp-content/themes/twentytwentyone
 
   deploy:
     needs: build
