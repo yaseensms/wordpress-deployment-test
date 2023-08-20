@@ -44,15 +44,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Setting up private key
+    - name: Install SSH Client
+      run: sudo apt-get install -y openssh-client
+
+    - name: Start SSH Agent & Setting up private key
       run: |
-        echo "$DEPLOY_KEY" > deploy_key.pem
+        eval "$(ssh-agent -s)"
+        echo "${{ secrets.DEPLOY_SSH_KEY }}" > deploy_key.pem
         chmod 600 deploy_key.pem
-        ssh-agent bash -c 'ssh-add deploy_key.pem'
+        ssh-add deploy_key.pem
 
     - name: Deploy to server using Rsync
       run: |
         rsync -av --exclude='.git/' -e "ssh -i deploy_key.pem -o StrictHostKeyChecking=no" ./ ec2-user@54.93.51.234:/var/www/html
-      env:
-        DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
 
