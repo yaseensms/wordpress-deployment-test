@@ -1,0 +1,56 @@
+name: WordPress CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Navigate to the theme directory
+      run: cd wp-content/themes/twentytwentyone
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Install Sass
+      run: npm install sass
+
+    - name: Install rtlcss
+      run: npm install rtlcss
+
+    - name: Install postcss
+      run: npm install postcss
+
+    - name: Build theme assets
+      run: |
+        ./node_modules/.bin/sass assets/sass/style.scss:style.css --style=expanded --source-map
+        ./node_modules/.bin/rtlcss style.css style-rtl.css
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setting up private key
+      run: |
+        echo "$DEPLOY_KEY" > deploy_key.pem
+        chmod 600 deploy_key.pem
+        ssh-agent bash -c 'ssh-add deploy_key.pem'
+
+    - name: Deploy to server using Rsync
+      run: |
+        rsync -av --exclude='.git/' -e "ssh -i deploy_key.pem -o StrictHostKeyChecking=no" ./ ubuntu@54.93.51.234:/var/www/html
+      env:
+        DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
