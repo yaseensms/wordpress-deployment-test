@@ -13,30 +13,30 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: List contents after checkout
+      run: ls -la
+
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
         node-version: '14'
 
-    - name: Navigate to the theme directory
-      run: cd wp-content/themes/twentytwentyone
-
     - name: Install Dependencies
-      run: npm install
+      run: npm install --prefix wp-content/themes/twentytwentyone
 
     - name: Install Sass
-      run: npm install sass
+      run: npm install sass --prefix wp-content/themes/twentytwentyone
 
     - name: Install rtlcss
-      run: npm install rtlcss
+      run: npm install rtlcss --prefix wp-content/themes/twentytwentyone
 
     - name: Install postcss
-      run: npm install postcss
+      run: npm install postcss --prefix wp-content/themes/twentytwentyone
 
     - name: Build theme assets
       run: |
-        ./node_modules/.bin/sass assets/sass/style.scss:style.css --style=expanded --source-map
-        ./node_modules/.bin/rtlcss style.css style-rtl.css
+        ./wp-content/themes/twentytwentyone/node_modules/.bin/sass wp-content/themes/twentytwentyone/assets/sass/style.scss:wp-content/themes/twentytwentyone/style.css --style=expanded --source-map
+        ./wp-content/themes/twentytwentyone/node_modules/.bin/rtlcss wp-content/themes/twentytwentyone/style.css wp-content/themes/twentytwentyone/style-rtl.css
         # Add similar commands for other build steps
 
   deploy:
