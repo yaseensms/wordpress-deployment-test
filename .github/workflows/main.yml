@@ -54,8 +54,8 @@ jobs:
         chmod 600 deploy_key.pem
         ssh-add deploy_key.pem
 
-   - name: Check current directory
-     run: pwd && ls -la 
+    - name: Check current directory
+      run: pwd && ls -la 
 
     - name: Deploy to server using Rsync
       run: |
