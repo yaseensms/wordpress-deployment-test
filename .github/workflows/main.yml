@@ -13,11 +13,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Clone Repository
-      run: git clone https://github.com/yaseensms/wordpress-deployment-test.git ./repo
-
-    - name: List contents after checkout and clone
-      run: ls -la ./repo
+    - name: List contents after checkout
+      run: ls -la /home/runner/work/wordpress-deployment-test/wordpress-deployment-test
 
     - name: Set up Node.js
       uses: actions/setup-node@v2
@@ -25,21 +22,21 @@ jobs:
         node-version: '14'
 
     - name: Install Dependencies
-      run: npm install --prefix ./repo/wp-content/themes/twentytwentyone
+      run: npm install --prefix /home/runner/work/wordpress-deployment-test/wordpress-deployment-test/wp-content/themes/twentytwentyone
 
     - name: Install Sass
-      run: npm install sass --prefix ./repo/wp-content/themes/twentytwentyone
+      run: npm install sass --prefix /home/runner/work/wordpress-deployment-test/wordpress-deployment-test/wp-content/themes/twentytwentyone
 
     - name: Install rtlcss
-      run: npm install rtlcss --prefix ./repo/wp-content/themes/twentytwentyone
+      run: npm install rtlcss --prefix /home/runner/work/wordpress-deployment-test/wordpress-deployment-test/wp-content/themes/twentytwentyone
 
     - name: Install postcss
-      run: npm install postcss --prefix ./repo/wp-content/themes/twentytwentyone
+      run: npm install postcss --prefix /home/runner/work/wordpress-deployment-test/wordpress-deployment-test/wp-content/themes/twentytwentyone
 
     - name: Build theme assets
       run: |
-        ./repo/wp-content/themes/twentytwentyone/node_modules/.bin/sass ./repo/wp-content/themes/twentytwentyone/assets/sass/style.scss:./repo/wp-content/themes/twentytwentyone/style.css --style=expanded --source-map
-        ./repo/wp-content/themes/twentytwentyone/node_modules/.bin/rtlcss ./repo/wp-content/themes/twentytwentyone/style.css ./repo/wp-content/themes/twentytwentyone/style-rtl.css
+        /home/runner/work/wordpress-deployment-test/wordpress-deployment-test/wp-content/themes/twentytwentyone/node_modules/.bin/sass /home/runner/work/wordpress-deployment-test/wordpress-deployment-test/wp-content/themes/twentytwentyone/assets/sass/style.scss:/home/runner/work/wordpress-deployment-test/wordpress-deployment-test/wp-content/themes/twentytwentyone/style.css --style=expanded --source-map
+        /home/runner/work/wordpress-deployment-test/wordpress-deployment-test/wp-content/themes/twentytwentyone/node_modules/.bin/rtlcss /home/runner/work/wordpress-deployment-test/wordpress-deployment-test/wp-content/themes/twentytwentyone/style.css /home/runner/work/wordpress-deployment-test/wordpress-deployment-test/wp-content/themes/twentytwentyone/style-rtl.css
 
   deploy:
     needs: build
@@ -56,10 +53,10 @@ jobs:
         eval "$(ssh-agent -s)"
         ssh-add deploy_key.pem
 
-    - name: Check current directory and cloned repository contents
-      run: pwd && ls -la ./repo
+    - name: Check current directory and repository contents
+      run: pwd && ls -la /home/runner/work/wordpress-deployment-test/wordpress-deployment-test
 
     - name: Deploy to server using Rsync
       run: |
-        rsync -avv --exclude='.git/' --exclude='deploy_key.pem' -e "ssh -i deploy_key.pem -o StrictHostKeyChecking=no" ./repo/ ubuntu@54.93.51.234:/var/www/html/
+        rsync -avv --exclude='.git/' --exclude='deploy_key.pem' -e "ssh -i deploy_key.pem -o StrictHostKeyChecking=no" /home/runner/work/wordpress-deployment-test/wordpress-deployment-test/ ubuntu@54.93.51.234:/var/www/html/
 
