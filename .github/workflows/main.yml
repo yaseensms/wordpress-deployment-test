@@ -10,26 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Remove the original Checkout action
-    #- name: Checkout code
-    #  uses: actions/checkout@v2
-
-    - name: Install SSH Client
-      run: sudo apt-get install -y openssh-client
-
-    - name: Setup SSH Key for Git
-      run: |
-       echo "${{ secrets.GIT_SSH_KEY }}" > github_ssh_key.pem
-       chmod 600 github_ssh_key.pem
-       eval "$(ssh-agent -s)"
-       ssh-add github_ssh_key.pem
-
-    - name: Git Clone
-      run: |
-       git clone git@github.com:yaseensms/wordpress-deployment-test.git
+    - name: Checkout code
+      uses: actions/checkout@v2
 
     - name: List contents after checkout
-      run: ls -la ./wordpress-deployment-test
+      run: ls -la
 
     - name: Set up Node.js
       uses: actions/setup-node@v2
@@ -37,32 +22,36 @@ jobs:
         node-version: '14'
 
     - name: Install Dependencies
-      run: npm install --prefix wordpress-deployment-test/wp-content/themes/twentytwentyone
+      run: npm install --prefix wp-content/themes/twentytwentyone
 
     - name: Install Sass
-      run: npm install sass --prefix wordpress-deployment-test/wp-content/themes/twentytwentyone
+      run: npm install sass --prefix wp-content/themes/twentytwentyone
 
     - name: Install rtlcss
-      run: npm install rtlcss --prefix wordpress-deployment-test/wp-content/themes/twentytwentyone
+      run: npm install rtlcss --prefix wp-content/themes/twentytwentyone
 
     - name: Install postcss
-      run: npm install postcss --prefix wordpress-deployment-test/wp-content/themes/twentytwentyone
+      run: npm install postcss --prefix wp-content/themes/twentytwentyone
 
     - name: Build theme assets
       run: |
-        ./wordpress-deployment-test/wp-content/themes/twentytwentyone/node_modules/.bin/sass wordpress-deployment-test/wp-content/themes/twentytwentyone/assets/sass/style.scss:wordpress-deployment-test/wp-content/themes/twentytwentyone/style.css --style=expanded --source-map
-        ./wordpress-deployment-test/wp-content/themes/twentytwentyone/node_modules/.bin/rtlcss wordpress-deployment-test/wp-content/themes/twentytwentyone/style.css wordpress-deployment-test/wp-content/themes/twentytwentyone/style-rtl.css
+        ./wp-content/themes/twentytwentyone/node_modules/.bin/sass wp-content/themes/twentytwentyone/assets/sass/style.scss:wp-content/themes/twentytwentyone/style.css --style=expanded --source-map
+        ./wp-content/themes/twentytwentyone/node_modules/.bin/rtlcss wp-content/themes/twentytwentyone/style.css wp-content/themes/twentytwentyone/style-rtl.css
+        # Add similar commands for other build steps
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Start SSH Agent & Setting up private key for deploy
+    - name: Install SSH Client
+      run: sudo apt-get install -y openssh-client
+
+    - name: Setup SSH Key for Deployment
       run: |
-        eval "$(ssh-agent -s)"
         echo "${{ secrets.DEPLOY_SSH_KEY }}" > deploy_key.pem
         chmod 600 deploy_key.pem
+        eval "$(ssh-agent -s)"
         ssh-add deploy_key.pem
 
     - name: Check current directory
@@ -70,4 +59,5 @@ jobs:
 
     - name: Deploy to server using Rsync
       run: |
-        rsync -av --exclude='.git/' --exclude='github_ssh_key.pem' --exclude='deploy_key.pem' -e "ssh -i deploy_key.pem -o StrictHostKeyChecking=no" ./wordpress-deployment-test/ ubuntu@54.93.51.234:/var/www/html/
+        rsync -av --exclude='.git/' --exclude='deploy_key.pem' -e "ssh -i deploy_key.pem -o StrictHostKeyChecking=no" ./ ubuntu@54.93.51.234:/var/www/html/
+
