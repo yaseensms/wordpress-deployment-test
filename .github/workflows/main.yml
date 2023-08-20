@@ -54,6 +54,9 @@ jobs:
         chmod 600 deploy_key.pem
         ssh-add deploy_key.pem
 
+   - name: Check current directory
+     run: pwd && ls -la 
+
     - name: Deploy to server using Rsync
       run: |
         rsync -av --exclude='.git/' -e "ssh -i deploy_key.pem -o StrictHostKeyChecking=no" ./ ubuntu@54.93.51.234:/var/www/html
