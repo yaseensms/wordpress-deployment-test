@@ -56,5 +56,5 @@ jobs:
 
     - name: Deploy to server using Rsync
       run: |
-        rsync -av --exclude='.git/' -e "ssh -i deploy_key.pem -o StrictHostKeyChecking=no" ./ ec2-user@54.93.51.234:/var/www/html
+        rsync -av --exclude='.git/' -e "ssh -i deploy_key.pem -o StrictHostKeyChecking=no" ./ ubuntu@54.93.51.234:/var/www/html
 
