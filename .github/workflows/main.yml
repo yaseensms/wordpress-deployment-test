@@ -47,8 +47,12 @@ jobs:
     - name: List directory contents (for debugging)
       run: ls -la /home/runner/work/wordpress-deployment-test/wordpress-deployment-test
 
+    - name: Setup SSH key for deployment
+      run: |
+        echo "${{ secrets.DEPLOY_SSH_KEY }}" > deploy_key.pem
+        chmod 600 deploy_key.pem
+
     - name: Deploy to server
       run: |
         rsync -avv --exclude='.git/' --exclude='deploy_key.pem' -e "ssh -i deploy_key.pem -o StrictHostKeyChecking=no" /home/runner/work/wordpress-deployment-test/wordpress-deployment-test/ ubuntu@54.93.51.234:/var/www/html/
-
 
